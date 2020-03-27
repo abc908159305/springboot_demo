@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<head>
+    <title>springboot_demo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script src="./js/jquery/2.0.0/jquery.min.js"></script>
+    <script src="./js/vue/2.5.16/vue.min.js"></script>
+    <script src="./js/axios/0.17.1/axios.min.js"></script>
+    <link href="https://how2j.cn/study/css/bootstrap/3.3.6/bootstrap.min.css" rel="stylesheet">
+    <script src="https://how2j.cn/study/js/bootstrap/3.3.6/bootstrap.min.js"></script>
+</head>
+<script>
+    $(function () {
+        var data4Vue = {
+            uri: 'categories',
+            category: {id: 0, name: ''},
+            category_update : {id: 0, name: ''},
+            beans: [],
+            pageinfo:{}
+        };
+        var vue = new Vue({
+            el: '#work',
+            data: data4Vue,
+            mounted: function () {
+                this.list(0);
+            },
+            methods: {
+                list: function (start) {
+                    url = this.uri + "?start=" + start;
+                    axios.get(url).then(function (response) {
+                        vue.beans = response.data.list;
+                        vue.pageinfo = response.data;
+                    });
+                },
+                delete_: function (id) {
+                    var bool = confirm("确认删除吗？");
+                    if(!bool){
+                        return;
+                    }
+                    url = this.uri + "/" + id;
+                    axios.delete(url).then(function (response) {
+                        if (0 != response.data.length) {
+                            alert(response.data);
+                        }
+                        vue.list(vue.pageinfo.pageNum);
+                    });
+                },
+                add:function(){
+                    url = this.uri;
+                    axios.post(url,this.category).then(function(response){
+                        vue.list(vue.pageinfo.pageNum);
+                        vue.category = {id: 0, name: ''};
+                    });
+                },
+                update:function(){
+                    url = this.uri;
+                    axios.put(url,this.category_update).then(function(response){
+                        vue.list(vue.pageinfo.pageNum);
+                        vue.category_update = {id: 0, name: ''};
+//                        $("#myModal").modal('hide');
+                    });
+                },
+                changeUpdateId:function(id,name){
+                    this.category_update.id = id;
+                    this.category_update.name = name;
+                },
+            }
+        });
+    });
+</script>
+<body>
+<div id="work">
+    <table class="table  table-bordered table-hover table-condensed"
+           align="center" style="width: 40%;">
+        <thead>
+        <tr class="success">
+            <th>ID</th>
+            <th>分类名称</th>
+            <th>编辑</th>
+            <th>删除</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="bean in beans">
+            <td>{{bean.id}}</td>
+            <td>{{bean.name}}</td>
+            <td><a data-toggle="modal" data-target="#myModal" @click="changeUpdateId(bean.id,bean.name)">编辑</a></td>
+            <td><a @click="delete_(bean.id)">删除</a></td>
+        </tr>
+        </tbody>
+    </table>
+    <br>
+    <div align="center">
+        <nav>
+            <ul class="pagination">
+                <li><a href="#" @click="list(pageinfo.firstPage)"> << </a></li>
+                <li><a href="#" @click="list(pageinfo.prePage)"> < </a></li>
+                <li v-for="page in pageinfo.pages">
+                    <a href="#" @click="list(page)">{{page}}</a>
+                </li>
+
+                <li><a href="#" @click="list(pageinfo.pageNum+1)"> > </a></li>
+                <li><a href="#" @click="list(pageinfo.pages)"> >> </a></li>
+            </ul>
+        </nav>
+    </div>
+    <br>
+    <div class="addDiv" align="center">
+        <table class=" table-condensed" style="width: 20%;">
+            <tr>
+                <td>分类名称：</td>
+                <td><input type="text" v-model.trim="category.name" class="form-control"></td>
+                <td><p>{{category.name}}</p></td>
+            </tr>
+            <tr >
+                <td colspan="2" align="center">
+                    <a @click="add" href="#nowhere" class="btn btn-success">增加分类</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button data-dismiss="modal" class="close" type="button"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">修改</h4>
+                </div>
+                <div class="modal-body">
+                    <p>分类名称</p>
+                    <input type="text" v-model.trim="category_update.name" placeholder="category_update.name" class="form-control">
+                </div>
+
+                <div class="modal-footer">
+                    <button data-dismiss="modal" class="btn btn-default" type="button">取消</button>
+                    <button class="btn btn-primary" data-dismiss="modal" type="button" @click="update">提交修改</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
+</div>
+</body>
+</html>
