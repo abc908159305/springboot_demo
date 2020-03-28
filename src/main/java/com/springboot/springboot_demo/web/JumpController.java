@@ -5,8 +5,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class JumpController {
-    @GetMapping(value = "/list1")
+    @GetMapping(value = "/list")
     public String listCategory(){
         return "/listCategory";
+    }
+    @GetMapping(value = "/login")
+    public String login(){
+        return "/login";
     }
 }

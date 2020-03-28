@@ -18,6 +18,7 @@ public class CategoryController {
     public PageInfo<Category> list(@RequestParam(value = "start",defaultValue = "0") int start,
                                @RequestParam(value = "size",defaultValue = "5") int size){
         PageInfo<Category> page = categoryService.list(start, size);
+        List<Category> cs = page.getList();
         return page;
     }
     @DeleteMapping(value = "/categories/{id}")

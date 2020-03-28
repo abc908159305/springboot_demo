@@ -1,5 +1,6 @@
 package com.springboot.springboot_demo.interceptor;
 
+import com.springboot.springboot_demo.pojo.User;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,12 +18,16 @@ public class MyInterceptor implements HandlerInterceptor {
         };
         String uri = request.getRequestURI();
         uri = StringUtils.remove(uri, contextPath+"/");
-
+        User user = (User) session.getAttribute("user");
         for (String str :
                 requireAuthPages) {
             if (uri.equals(str)) {
-                response.sendRedirect("login");
-                return false;
+                if (null == user){
+                    response.sendRedirect("/login");
+                    return false;
+                }else{
+                    return true;
+                }
             }
         }
         return true;
