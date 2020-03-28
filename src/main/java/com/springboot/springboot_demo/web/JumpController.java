@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class JumpController {
-    @GetMapping(value = "/listCategory")
+    @GetMapping(value = "/list1")
     public String listCategory(){
         return "/listCategory";
     }
